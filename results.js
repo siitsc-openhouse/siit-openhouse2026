@@ -86,7 +86,7 @@ const RESULTS = {
     majors: ["Business Analytics", "Supply Chain Analytics", "Engineering Management", "Management Analytics"],
     image: "images/orca class/08-Business-and-Supply-Chain-Analytics.png",
     profile: { process: 0.5, material: -1, place: -1, drive: 1 }
-  }
+  } //*
 };
 
 /* ==========================================================

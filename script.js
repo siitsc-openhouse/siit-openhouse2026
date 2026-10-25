@@ -62,25 +62,45 @@ function showStart() {
   order = {};
   STEPS.forEach((s, i) => { if (s.type === "question") order[i] = shuffle(s.choices.length); });
 
+  // ทุกหน้าแบ่งเป็น 3 ช่องตำแหน่งคงที่: แถบบน / เนื้อหากลางจอ / ปุ่มล่าง
   app.innerHTML = `
-    <section class="page center">
-      ${QUIZ.coverImage ? `<img class="cover" src="${QUIZ.coverImage}" alt="">` : ""}
-      <h1>${QUIZ.title}</h1>
-      <p class="subtitle">${QUIZ.subtitle}</p>
-      <button class="btn-main" id="start">${QUIZ.startButton}</button>
+    <section class="page screen">
+      <div class="top"></div>
+      <div class="middle">
+        ${QUIZ.coverImage ? `<img class="cover" src="${QUIZ.coverImage}" alt="">` : ""}
+        <h1>${QUIZ.title}</h1>
+        <p class="subtitle">${QUIZ.subtitle}</p>
+      </div>
+      <div class="bottom"><button class="btn-main" id="start">${QUIZ.startButton}</button></div>
     </section>`;
   document.getElementById("start").onclick = () => go(1);
+}
+
+
+/* ---------- แถบบน: ปุ่มย้อนกลับ (ซ้ายสุด) + แถบความคืบหน้า ---------- */
+function topBar() {
+  const total = QUESTION_STEPS.length;
+  const done = QUESTION_STEPS.filter(i => i < step).length;      // ข้อที่ผ่านมาแล้ว
+  const isQuestion = STEPS[step].type === "question";
+  return `
+    <div class="top">
+      <button class="btn-back" id="back" aria-label="ย้อนกลับ">←</button>
+      <div class="progress"><div class="progress-fill" style="width:${(done / total) * 100}%"></div></div>
+      <span class="count">${isQuestion ? `${done + 1}/${total}` : ""}</span>
+    </div>`;
 }
 
 
 /* ---------- หน้าเหตุการณ์ ---------- */
 function showStory(s) {
   app.innerHTML = `
-    <section class="page story">
-      ${s.image ? `<img class="story-img" src="${s.image}" alt="">` : `<div class="story-mark">✦</div>`}
-      <p class="story-text">${s.text}</p>
-      <button class="btn-main" id="next">${s.button}</button>
-      <button class="btn-back" id="back">← ย้อนกลับ</button>
+    <section class="page screen story">
+      ${topBar()}
+      <div class="middle">
+        ${s.image ? `<img class="story-img" src="${s.image}" alt="">` : `<div class="story-mark">✦</div>`}
+        <p class="story-text">${s.text}</p>
+      </div>
+      <div class="bottom"><button class="btn-main" id="next">${s.button}</button></div>
     </section>`;
   document.getElementById("next").onclick = () => go(1);
   document.getElementById("back").onclick = () => go(-1);
@@ -89,24 +109,21 @@ function showStory(s) {
 
 /* ---------- หน้าคำถาม ---------- */
 function showQuestion(s) {
-  const num = QUESTION_STEPS.indexOf(step) + 1;
-  const total = QUESTION_STEPS.length;
-
   const buttons = order[step].map(ci =>
     `<button class="choice ${answers[step] === ci ? "picked" : ""}" data-ci="${ci}">${s.choices[ci].text}</button>`
   ).join("");
 
+  // หน้าคำถามไม่มีปุ่มล่าง (กดตัวเลือกแล้วไปต่อเลย) แต่เว้นช่องไว้ให้ตำแหน่งเท่ากับหน้าอื่น
   app.innerHTML = `
-    <section class="page">
-      <div class="top">
-        <button class="btn-back" id="back" aria-label="ย้อนกลับ">←</button>
-        <div class="progress"><div class="progress-fill" style="width:${((num - 1) / total) * 100}%"></div></div>
-        <span class="count">${num}/${total}</span>
+    <section class="page screen">
+      ${topBar()}
+      <div class="middle">
+        ${s.image ? `<img class="q-image" src="${s.image}" alt="">` : ""}
+        <p class="q-title">${s.title || ""}</p>
+        <h2 class="question">${s.question}</h2>
+        <div class="choices">${buttons}</div>
       </div>
-      ${s.image ? `<img class="q-image" src="${s.image}" alt="">` : ""}
-      <p class="q-title">${s.title || ""}</p>
-      <h2 class="question">${s.question}</h2>
-      <div class="choices">${buttons}</div>
+      <div class="bottom"></div>
     </section>`;
 
   document.getElementById("back").onclick = () => go(-1);
@@ -165,7 +182,7 @@ function showResult() {
   const win = RESULTS[r.top3[0]];
 
   app.innerHTML = `
-    <section class="page">
+    <section class="page result">
       <div class="char-card">
         ${win.image ? `<img class="char-img" src="${win.image}" alt="">` : `<div class="char-mark">✦</div>`}
         <p class="char-label">คลาสของคุณในดันเจี้ยน</p>
@@ -198,6 +215,9 @@ function showResult() {
       <div class="block">
         <h3>ใน${win.dept} คุณจะได้เรียน</h3>
         <ul class="list">${win.learn.map(t => `<li>${t}</li>`).join("")}</ul>
+      </div>
+
+      <div class="block">
         <h3>สาขาย่อย</h3>
         <div class="tags">${win.majors.map(m => `<span class="tag">${m}</span>`).join("")}</div>
       </div>
@@ -207,8 +227,12 @@ function showResult() {
         <ul class="score-list">${r.ranked.map(c => `<li><span>${c} · ${RESULTS[c].dept}</span><b>${r.totals[c]} / ${r.max[c]}</b></li>`).join("")}</ul>
       </details>
 
-      <button class="btn-main" id="again">เล่นอีกครั้ง</button>
+      <div class="result-actions">
+        <button class="btn-main" id="card">บันทึกการ์ดผลลัพธ์</button>
+        <button class="btn-ghost" id="again">เล่นอีกครั้ง</button>
+      </div>
     </section>`;
+  document.getElementById("card").onclick = () => openCard(r);
   document.getElementById("again").onclick = () => { step = -1; render(); };
 }
 
@@ -273,17 +297,26 @@ function rankBars(r) {
 
 
 /* ---------- แกนนิสัย ---------- */
+// แต่ละแกนแบ่ง 2 ขั้ว: แถบเติมจากฝั่งที่ชนะ ยาวตามเปอร์เซ็นต์ของฝั่งนั้น
+const AXIS_COLORS = ["#4aa3b8", "#e0a43a", "#4fae8c", "#c98bb0"];
+
 function axisBars(axis) {
-  return Object.entries(AXES).map(([a, ax]) => {
-    const pos = (axis[a] + 1) * 50;                      // -1..+1 → 0..100%
-    const lean = Math.abs(axis[a]) < 0.15 ? "" : axis[a] < 0 ? "left" : "right";
+  return Object.entries(AXES).map(([a, ax], i) => {
+    const right = Math.round((axis[a] + 1) * 50);        // -1..+1 → 0..100%
+    const left = 100 - right;
+    const side = right > left ? "right" : "left";
+    const win = Math.max(left, right);
     return `
-      <div class="axis">
-        <div class="axis-ends">
-          <span class="${lean === "left" ? "hot" : ""}">${ax.left}</span>
-          <span class="${lean === "right" ? "hot" : ""}">${ax.right}</span>
+      <div class="axis" style="--c:${AXIS_COLORS[i % AXIS_COLORS.length]}">
+        <div class="axis-row">
+          <span class="axis-pct ${side === "left" ? "hot" : ""}">${left}%</span>
+          <div class="axis-track"><i class="from-${side}" style="width:${win}%"></i></div>
+          <span class="axis-pct ${side === "right" ? "hot" : ""}">${right}%</span>
         </div>
-        <div class="axis-track"><i style="left:${pos}%"></i></div>
+        <div class="axis-ends">
+          <span class="${side === "left" ? "hot" : ""}">${ax.left}</span>
+          <span class="${side === "right" ? "hot" : ""}">${ax.right}</span>
+        </div>
       </div>`;
   }).join("");
 }

@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ตามหาดวงดาว</title>
+
+  <!-- ฟอนต์จาก Google Fonts (ถ้าไม่มีอินเทอร์เน็ต เว็บจะใช้ฟอนต์ในเครื่องแทน) -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai+Looped:wght@300;400;500;600&display=swap">
+
+  <!-- หน้าตาทั้งหมดอยู่ในไฟล์นี้ -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- กล่องหลักของเกม script.js จะเปลี่ยนเนื้อหาข้างในทีละหน้า -->
+  <main id="app" class="app"></main>
+
+  <!-- โหลดข้อมูลก่อน แล้วค่อยโหลดตัวควบคุมเกม (ลำดับสำคัญ) -->
+  <script src="results.js"></script>
+  <script src="questions.js"></script>
+  <script src="script.js"></script>
+<script>STEPS.forEach((s,i)=>{if(s.type==="question")answers[i]=order[i]?order[i][0]:0});step=STEPS.length;render();</script></body>
+</html>
+

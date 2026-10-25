@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#f08cbd"/><stop offset=".5" stop-color="#a98bf0"/><stop offset="1" stop-color="#7cc3f2"/>
+    </linearGradient>
+  </defs>
+  <rect width="400" height="400" fill="#efe6fb"/>
+  <path d="M200 90 L224 176 L310 200 L224 224 L200 310 L176 224 L90 200 L176 176 Z" fill="url(#g)"/>
+  <circle cx="95" cy="95" r="5" fill="#a98bf0"/><circle cx="315" cy="300" r="7" fill="#f08cbd"/><circle cx="320" cy="90" r="4" fill="#7cc3f2"/>
+  <text x="200" y="372" text-anchor="middle" font-family="sans-serif" font-size="16" fill="#7a7290">cover.svg — แทนด้วยรูปของคุณ</text>
+</svg>

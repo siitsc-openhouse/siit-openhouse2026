@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300">
+  <rect width="400" height="300" fill="#e6f2fb"/>
+  <path d="M0 230 Q100 170 200 215 T400 200 V300 H0 Z" fill="#cfe5f7"/>
+  <path d="M300 60 L308 88 L336 96 L308 104 L300 132 L292 104 L264 96 L292 88 Z" fill="#a98bf0"/>
+  <text x="200" y="275" text-anchor="middle" font-family="sans-serif" font-size="15" fill="#7a7290">question.svg — รูปตัวอย่าง</text>
+</svg>

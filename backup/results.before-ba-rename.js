@@ -1,0 +1,114 @@
+/* ==========================================================
+   results.js — ผลลัพธ์ 8 ภาค และแกนวิเคราะห์นิสัย
+   ----------------------------------------------------------
+   dept ชื่อภาค / job ชื่อคลาส / image รูปการ์ด (ไม่บังคับ) / desc คำอธิบาย
+   traits นิสัย 3 ข้อ / learn วิชาที่จะได้เรียน / majors สาขาย่อย
+   profile ตำแหน่งของภาคบนแกนนิสัย -1 ถึง +1 (ใช้วาดกราฟแกน)
+   ลำดับในไฟล์นี้ใช้ตัดสินเป็นขั้นสุดท้ายตอนคะแนนเสมอ
+   ========================================================== */
+
+const AXES = {
+  process:  { left: "ระบบและกระบวนการ", right: "ผู้ใช้และการนำไปใช้" },
+  material: { left: "ข้อมูล", right: "ของจริงและเครื่องจักร" },
+  place:    { left: "ทำงานในออฟฟิศ", right: "ลงพื้นที่จริง" },
+  drive:    { left: "ทำให้ราบรื่นและมั่นคง", right: "สร้างสิ่งใหม่" }
+};
+
+const RESULTS = {
+  CE: {
+    dept: "วิศวกรรมโยธา", job: "Warrior · นักรบผู้สร้างปราการ",
+    desc: "คุณอยากสร้างสิ่งที่มั่นคง อยู่ได้นาน และปกป้องคนจำนวนมาก",
+    traits: ["มองหาจุดแข็งและจุดอ่อนของสิ่งรอบตัวเสมอ", "ไม่กลัวออกไปลุยหน้างาน", "ปลอดภัยไว้ก่อน ค่อยไปต่อ"],
+    learn: ["วิเคราะห์และออกแบบโครงสร้าง", "ปฐพีกลศาสตร์และฐานราก", "วิศวกรรมแหล่งน้ำและการขนส่ง"],
+    majors: ["ภาคนี้ไม่มีสาขาย่อย"],
+    image: "images/orca class/01-Civil-Engineering.png",
+    profile: { process: 0.5, material: 1, place: 1, drive: -0.5 }
+  },
+  ChE: {
+    dept: "วิศวกรรมเคมี", job: "Alchemist · นักเล่นแร่แปรธาตุ",
+    desc: "คุณสงสัยเสมอว่าสิ่งหนึ่งเปลี่ยนเป็นอีกสิ่งได้อย่างไร และอยากผลิตมันให้ได้ทีละมากๆ",
+    traits: ["ช่างสังเกตการเปลี่ยนแปลงเล็กๆ", "ชอบทดลองจนกว่าจะได้สูตรที่ใช่", "อยากรู้ว่าของรอบตัวทำมาจากอะไร"],
+    learn: ["สมดุลมวลและพลังงาน", "จลนศาสตร์ของปฏิกิริยาเคมี", "การออกแบบโรงงานเคมี"],
+    majors: ["ภาคนี้ไม่มีสาขาย่อย"],
+    image: "images/orca class/03-Chemical-Engineering.png",
+    profile: { process: -0.5, material: 0.5, place: 0.5, drive: 0 }
+  },
+  CPE: {
+    dept: "วิศวกรรมคอมพิวเตอร์", job: "Cyber Wizard · พ่อมดไซเบอร์",
+    desc: "คุณชอบถอดรหัส คิดเป็นขั้นตอน และสั่งให้ระบบทำงานได้เองอย่างแม่นยำ",
+    traits: ["เห็นปริศนาแล้วอยากแก้ให้ได้", "คิดเป็นขั้นตอนอย่างมีตรรกะ", "อยากเข้าใจระบบจนถึงแก่น"],
+    learn: ["โครงสร้างข้อมูลและอัลกอริทึม", "สถาปัตยกรรมคอมพิวเตอร์", "Machine Learning และการรู้จำรูปแบบ"],
+    majors: ["Artificial Intelligence", "Cloud Computing & Cyber Security"],
+    image: "images/orca class/04-Computer-Engineering.png",
+    profile: { process: -0.5, material: 0, place: -1, drive: 1 }
+  },
+  DE: {
+    dept: "วิศวกรรมดิจิทัล", job: "Digital Technician · ช่างเทคโนโลยีดิจิทัล",
+    desc: "คุณอยากเชื่อมคนเข้ากับข้อมูล และสร้างเครื่องมือที่ทุกคนใช้ได้จริง",
+    traits: ["มองเห็นเรื่องราวที่ซ่อนอยู่ในข้อมูล", "คิดถึงคนที่จะใช้งานเสมอ", "ชอบทำสิ่งยุ่งยากให้ง่ายขึ้น"],
+    learn: ["การพัฒนาแอปพลิเคชันสำหรับธุรกิจ", "Big Data Analytics และ Machine Learning", "สถิติและการสร้างแบบจำลองข้อมูล"],
+    majors: ["Application Software Development", "Data Science"],
+    image: "images/orca class/05-Digital-Engineering.png",
+    profile: { process: 1, material: -1, place: -1, drive: 1 }
+  },
+  EE: {
+    dept: "วิศวกรรมไฟฟ้า", job: "Stormcaller · นักรบคทาสายฟ้า",
+    desc: "คุณสนใจพลังที่มองไม่เห็น และอยากให้มันไปถึงทุกที่อย่างไม่สะดุด",
+    traits: ["อยากรู้ว่าพลังงานไหลไปอย่างไร", "ชอบทำให้ระบบใหญ่ทำงานได้มั่นคง", "สนุกกับฟิสิกส์ที่มองไม่เห็นด้วยตา"],
+    learn: ["การวิเคราะห์วงจรไฟฟ้า", "แม่เหล็กไฟฟ้า", "ไมโครโปรเซสเซอร์และ IoT"],
+    majors: ["Communication Engineering", "Power Engineering"],
+    image: "images/orca class/06-Electrical-Engineering.png",
+    profile: { process: -0.5, material: 0.5, place: 0, drive: -0.5 }
+  },
+  IE: {
+    dept: "วิศวกรรมอุตสาหการและโลจิสติกส์อัจฉริยะ", job: "Explorer · นักสำรวจผู้นำทาง",
+    desc: "คุณมองเห็นภาพรวม และหาเส้นทางที่ทุกคนไปถึงได้เร็วและคุ้มที่สุด",
+    traits: ["วางแผนก่อนลงมือเสมอ", "ชอบจัดการให้ทุกอย่างลงตัว", "ทนเห็นความสูญเปล่าไม่ได้"],
+    learn: ["กระบวนการผลิตสมัยใหม่", "ระบบงานและความปลอดภัย", "การวางแผนการผลิตและโลจิสติกส์"],
+    majors: ["ภาคนี้ไม่มีสาขาย่อย"],
+    image: "images/orca class/07-Industrial-Engineering-Logistics.png",
+    profile: { process: -1, material: 0, place: 0.5, drive: -0.5 }
+  },
+  ME: {
+    dept: "วิศวกรรมเครื่องกล", job: "Tinkerer · ช่างประดิษฐ์ถือค้อน",
+    desc: "คุณเรียนรู้จากการลงมือ และอยากรู้ว่าทุกอย่างขยับได้อย่างไร",
+    traits: ["ชอบจับของจริงมากกว่าดูในจอ", "เห็นของพังแล้วอยากซ่อม", "สนุกกับกลไกที่หมุนประสานกัน"],
+    learn: ["เครื่องจักรกล", "ความร้อน การทำความเย็น และของไหล", "ระบบพลวัตและการควบคุมอัตโนมัติ"],
+    majors: ["ภาคนี้ไม่มีสาขาย่อย"],
+    image: "images/orca class/02-Mechanical-Engineering.png",
+    profile: { process: 0, material: 1, place: 0.5, drive: 0 }
+  },
+  BSAC: {
+    dept: "Business and Supply Chain Analytics", job: "Merchant · พ่อค้าผู้มองเห็นโอกาส",
+    desc: "คุณมองเห็นคุณค่าและโอกาสที่คนอื่นมองข้าม และชอบใช้ข้อมูลตัดสินใจ",
+    traits: ["มองเห็นโอกาสก่อนใคร", "ชอบคุยและต่อรองกับคน", "ตัดสินใจจากตัวเลขมากกว่าความรู้สึก"],
+    learn: ["Marketing Analytics", "การจัดการและวิเคราะห์สินค้าคงคลัง", "ซอฟต์แวร์วางแผนทรัพยากรองค์กร (ERP)"],
+    majors: ["Business Analytics", "Supply Chain Analytics", "Engineering Management"],
+    image: "images/orca class/08-Business-and-Supply-Chain-Analytics.png",
+    profile: { process: 0.5, material: -1, place: -1, drive: 1 }
+  } //*
+};
+
+/* ==========================================================
+   BACKUP — โค้ดเดิมที่ถูกแทนที่ (ปิดไว้ ไม่ได้ใช้งาน)
+   ----------------------------------------------------------
+   1) path รูปเดิมของ IE ใน results.js (ชื่อไฟล์ไม่ตรงกับไฟล์จริง รูปจึงไม่ขึ้น)
+      image: "images/orca class/07-Industrial-Engineering.png",
+
+   2) axisBars() เวอร์ชันเดิมจาก script.js (แกนแบบจุดเลื่อนบนเส้นเดียว)
+
+function axisBars(axis) {
+  return Object.entries(AXES).map(([a, ax]) => {
+    const pos = (axis[a] + 1) * 50;                      // -1..+1 → 0..100%
+    const lean = Math.abs(axis[a]) < 0.15 ? "" : axis[a] < 0 ? "left" : "right";
+    return `
+      <div class="axis">
+        <div class="axis-ends">
+          <span class="${lean === "left" ? "hot" : ""}">${ax.left}</span>
+          <span class="${lean === "right" ? "hot" : ""}">${ax.right}</span>
+        </div>
+        <div class="axis-track"><i style="left:${pos}%"></i></div>
+      </div>`;
+  }).join("");
+}
+   ========================================================== */

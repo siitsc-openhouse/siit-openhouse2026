@@ -239,7 +239,7 @@ async function drawCard(r) {
 
   // หัวการ์ด (อยู่ในโซนบนที่แอปอาจบัง จึงใส่แค่ชื่อเกม)
   cardFont(ctx, 32, 600); ctx.fillStyle = CARD.soft;
-  ctx.fillText(QUIZ.title, CARD.w / 2, 150);
+  ctx.fillText(game.quiz.title, CARD.w / 2, 150);   // ชื่อเวอร์ชันที่เล่น (game มาจาก script.js)
   ctx.textAlign = "left"; ctx.textBaseline = "top";
 
   // เนื้อหาหลัก เรียงจากบนลงล่าง (วัดความสูงก่อน ถ้าล้นพื้นที่ให้ย่อทั้งก้อนลงพอดี)
@@ -304,7 +304,7 @@ async function openCard(r) {
     // มือถือ: เปิดหน้าแชร์ของเครื่อง (บันทึกลงอัลบั้ม / ส่งเข้า IG ได้) / คอม: ดาวน์โหลดไฟล์
     const file = new File([blob], name, { type: "image/png" });
     if (navigator.canShare && navigator.canShare({ files: [file] })) {
-      try { await navigator.share({ files: [file], title: QUIZ.title }); return; }
+      try { await navigator.share({ files: [file], title: game.quiz.title }); return; }
       catch (e) { if (e.name === "AbortError") return; }
     }
     const a = document.createElement("a");

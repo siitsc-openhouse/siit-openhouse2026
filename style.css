@@ -31,33 +31,39 @@
   /* ขนาด */
   --width: 440px;         /* ความกว้างสูงสุดของควิซ */
   --radius: 20px;         /* ความโค้งมุมปุ่ม */
-
-  --dot: #ffffff;         /* จุดกลมบนแถบแกนนิสัย */
-  color-scheme: light;
 }
 
-/* ---------- ธีมมืด ----------
-   ใช้เมื่อกดปุ่มเปลี่ยนธีม (data-theme="dark") หรือเครื่องตั้งโหมดมืดไว้และยังไม่เคยกดเลือกเอง
-   สองบล็อกนี้ต้องมีค่าเหมือนกัน */
+/* ธีมมืด: ไม้โอ๊กเข้ม + ม่วงลึกลับ */
 :root[data-theme="dark"] {
-  --bg: #16121f;
-  --card: #211b2d;
-  --ink: #ece6f7;
-  --ink-soft: #a79ebd;
-  --line: #372e4a;
-  --accent: #b8a0f6;
-  --dot: #211b2d;
-  color-scheme: dark;
+  --bg: #1f0f29;          /* พื้นหลัง: น้ำตาลโอ๊กเกือบดำ อมม่วง */
+  --card: #413457;        /* กล่อง: ไม้เข้ม */
+  --ink: #efe6dc;         /* ตัวหนังสือ: ครีมอุ่นๆ เหมือนแสงเทียน */
+  --ink-soft: #a7939c;
+  --line: #3d2d35;
+  --accent: #876f7a;      
+  --gradient: linear-gradient(120deg, #5b5076, #38547e, #41644a);
+  --track: #33252d;
+  --tag-bg: #413457;
+  color-scheme: dark;     /* ให้แถบเลื่อนและช่องกรอกเป็นสีมืดตามไปด้วย */
+}
+
+/* บรรยากาศดันเจี้ยน: แสงม่วงจางๆ จากมุมจอ (ใช้เฉพาะโหมดมืด) */
+:root[data-theme="dark"] body {
+  background:
+    radial-gradient(40rem 30rem at 0% 0%, rgba(123, 85, 201, .18), transparent 60%),
+    radial-gradient(36rem 28rem at 100% 100%, rgba(176, 86, 127, .14), transparent 60%),
+    var(--bg);
+  background-attachment: fixed;
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --bg: #16121f;
-    --card: #211b2d;
+    --bg: #220f29;
+    --card: #413457;
     --ink: #ece6f7;
-    --ink-soft: #a79ebd;
+    --ink-soft: #a7939c;
     --line: #372e4a;
-    --accent: #b8a0f6;
-    --dot: #211b2d;
+    --accent: #876f7a;
+    --dot: #413457;
     color-scheme: dark;
   }
 }
@@ -96,9 +102,9 @@ body {
 .theme-toggle:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 .theme-toggle svg { width: 20px; height: 20px; }
 
-/* เว้นที่ให้ปุ่มเปลี่ยนธีม: หน้าที่มีแถบบนเว้นด้านขวาของแถบ / หน้าผลเว้นด้านบน */
+/* เว้นที่ให้ปุ่มเปลี่ยนธีม: หน้าที่มีแถบบนเว้นด้านขวาของแถบ / หน้าแรกกับหน้าผลเว้นด้านบน */
 .top { padding-right: 52px; }
-.page.result { padding-top: 52px; }
+.page.center, .page.result { padding-top: 52px; }
 
 /* กล่องหลัก: อยู่กลางจอ กว้างไม่เกิน --width */
 .app {
@@ -140,19 +146,9 @@ body {
 }
 .screen .bottom { min-height: 56px; display: flex; justify-content: center; align-items: flex-end; }
 .screen .bottom .btn-main { width: 100%; }
-.q-title { margin: 0; font-size: 14px; font-weight: 600; color: var(--accent); }
-/* หน้าเหตุการณ์: เต็มความสูงจอ แถบบนอยู่ที่เดิม ส่วนเนื้อเรื่อง + ปุ่มรวมกันอยู่กลางจอ */
-.page.story { min-height: calc(100vh - 40px); min-height: calc(100dvh - 40px); }
-.story-body {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  gap: 22px;
-  padding-bottom: 44px;   /* ชดเชยความสูงแถบบน ให้กลางจอจริงๆ */
-}
-.story-body .btn-main { min-width: 60%; }
+.q-story  { margin: 0; font-size: 14.5px; line-height: 1.7; color: var(--ink-soft); }
+.q-story b { color: var(--ink); font-weight: 600; }   /* อยากเน้นคำไหนในเนื้อเรื่อง ครอบด้วย <b>…</b> */
+.question { margin: 0; font-size: 20px; font-weight: 600; color: var(--ink); line-height: 1.5; }
 .story-text { margin: 0; font-size: 18px; }
 .story-mark { font-size: 40px; color: var(--accent); }
 .story-img { width: 100%; border-radius: var(--radius); }
@@ -211,9 +207,6 @@ h1 { font-size: 30px; }
   background: linear-gradient(var(--card), var(--card)) padding-box,
               var(--gradient) border-box;   /* ขอบไล่สีตอนเลือกแล้ว */
 }
-
-/* ---------- ข้อความนำก่อนคำถาม (story ในข้อคำถาม) ---------- */
-.q-story { margin: 0; color: var(--ink-soft); }
 
 /* ---------- การ์ดไอเทม (layout: "inventory"): รูปซ้าย ชื่อ + คำอธิบายขวา ---------- */
 .choice.item {
@@ -319,7 +312,7 @@ h1 { font-size: 30px; }
 /* จุดกลมตรงปลายแถบ */
 .axis-track i::after {
   content: ""; position: absolute; top: 50%; width: 14px; height: 14px;
-  border-radius: 50%; background: var(--dot); border: 3px solid var(--c);
+  border-radius: 50%; background: white; border: 3px solid var(--c);
   transform: translate(-50%, -50%); box-sizing: border-box;
 }
 .axis-track i.from-left::after  { left: 100%; }
@@ -357,7 +350,6 @@ h1 { font-size: 30px; }
 .score-list { list-style: none; padding: 0; margin: 10px 0 0; text-align: left; }
 .score-list li { display: flex; justify-content: space-between; gap: 12px; padding: 4px 0; border-bottom: 1px solid var(--line); }
 
-
 /* ---------- หน้าแรก: ปุ่มเลือกเวอร์ชันเกม ---------- */
 .versions { display: flex; flex-direction: column; gap: 12px; margin-top: 8px; }
 .version {
@@ -376,23 +368,19 @@ h1 { font-size: 30px; }
 .version-note { font-size: 13px; color: var(--ink-soft); }
 .screen .bottom .btn-ghost { width: 100%; }
 
-/* ---------- หน้ารวมข้อมูลภาค ---------- */
-.depts { text-align: left; font-size: 15px; gap: 14px; }
-.depts p { margin: 0; }
-.top-title { font-size: 20px; }
-.dept-head { display: flex; align-items: center; gap: 14px; margin-bottom: 10px; }
-.dept-img {
-  flex: none; width: 84px; height: 84px; object-fit: contain;
-  border-radius: 16px; background: var(--bg);
-}
-.dept-mark { display: grid; place-items: center; font-size: 32px; color: var(--accent); }
-.dept-code { font-size: 12px; font-weight: 600; color: var(--accent); letter-spacing: 0.04em; }
-.dept-name { font-size: 17px; line-height: 1.4; }
-.dept-job { font-size: 13px; color: var(--ink-soft); }
-.dept-desc { font-size: 14px; margin-bottom: 14px !important; }
-.depts .btn-main { margin-top: 6px; }
-
 /* ปิดแอนิเมชันสำหรับคนที่ตั้งค่าเครื่องให้ลดการเคลื่อนไหว */
 @media (prefers-reduced-motion: reduce) {
   .page, .screen .middle { animation: none; }
 }
+
+/* ---------- หน้ารวมข้อมูลภาค: รูปตัวละครเล็กด้านซ้าย + ชื่อภาคด้านขวา ---------- */
+.dept-head { display: flex; align-items: center; gap: 14px; text-align: left; }
+.dept-img {
+  flex: 0 0 auto;
+  width: 96px; height: 96px;
+  object-fit: contain;
+  border-radius: 12px;
+}
+.dept-mark { display: grid; place-items: center; font-size: 36px; color: var(--accent); background: var(--bg); }
+.dept-code, .dept-job { margin: 0; font-size: 14px; color: var(--ink-soft); }
+.dept-name { font-size: 20px; }

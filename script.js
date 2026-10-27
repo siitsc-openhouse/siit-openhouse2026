@@ -27,8 +27,8 @@ const CODES = Object.keys(RESULTS);          // ลำดับภาคตา�
 // เกมแต่ละเวอร์ชัน: quiz = ชื่อ/ปุ่มเริ่ม, steps = หน้าเหตุการณ์และคำถาม
 // เพิ่มเวอร์ชันใหม่ได้โดยสร้างไฟล์คำถามแบบเดียวกัน แล้วเพิ่มบรรทัดในนี้ + ใส่ <script> ใน index.html
 const GAMES = {
-  story: { quiz: QUIZ, steps: STEPS, label: "เวอร์ชันเต็ม", note: "มีเนื้อเรื่อง 10 คำถาม · ประมาณ 5–7 นาที" },
-  quick: { quiz: QUIZ_QUICK, steps: STEPS_QUICK, label: "เวอร์ชันสั้น", note: "6 คำถาม ไม่มีเนื้อเรื่อง · ไม่ถึง 2 นาที" }
+  story: { quiz: QUIZ, steps: STEPS, label: "Version 1", note: "มีเนื้อเรื่อง 10 คำถาม · ประมาณ 5–7 นาที" },
+  quick: { quiz: QUIZ_QUICK, steps: STEPS_QUICK, label: "Version 2", note: "เนื้อเรื่องคริสตัลดาว 8 คำถาม · 5-7 นาที" }
 };
 
 let view = "home";      // "home" หน้าแรก / "depts" ข้อมูลภาค / "game" กำลังเล่น
@@ -130,7 +130,7 @@ function showDepts() {
         <h1 class="top-title">ข้อมูลทุกภาค</h1>
       </div>
       ${cards}
-      <button class="btn-main" id="play">ลองเล่นเกมหาภาคที่ใช่</button>
+      <button class="btn-main" id="play">ทำ quiz หาภาคที่ใช่</button>
     </section>`;
   document.getElementById("back").onclick = goHome;
   document.getElementById("play").onclick = goHome;
@@ -199,20 +199,15 @@ function topBar() {
 /* ---------- หน้าเหตุการณ์ ---------- */
 function showStory(s) {
   // แถบบนหน้าตาเดียวกับหน้าคำถาม (ปุ่มย้อนกลับอยู่ตำแหน่งเดียวกัน) ส่วนเนื้อเรื่อง + ปุ่มไปต่ออยู่กลางจอ
-  const total = QUESTION_STEPS.length;
-  const done = QUESTION_STEPS.filter(i => i < step).length;
   app.innerHTML = `
-    <section class="page story">
-      <div class="top">
-        <button class="btn-back" id="back" aria-label="ย้อนกลับ">←</button>
-        <div class="progress"><div class="progress-fill" style="width:${(done / total) * 100}%"></div></div>
-        <span class="count"></span>
-      </div>
-      <div class="story-body">
+    <section class="page screen">
+      ${topBar()}
+      <div class="middle">
         ${s.image ? `<img class="story-img" src="${s.image}" alt="">` : `<div class="story-mark">✦</div>`}
         <p class="story-text">${fill(s.text)}</p>
         <button class="btn-main" id="next">${s.button}</button>
       </div>
+      <div class="bottom"></div>
     </section>`;
   document.getElementById("next").onclick = () => go(1);
   document.getElementById("back").onclick = () => go(-1);
@@ -221,11 +216,14 @@ function showStory(s) {
 /* ---------- หน้าคั่นหลังเลือกคำตอบ ---------- */
 function showReaction(choice) {
   app.innerHTML = `
-    <section class="page story">
-      ${choice.reactionImage ? `<img class="story-img" src="${choice.reactionImage}" alt="">` : `<div class="story-mark">✦</div>`}
-      <p class="story-text">${fill(choice.reaction)}</p>
-      <button class="btn-main" id="next">${choice.reactionButton || "ไปต่อ"}</button>
-      <button class="btn-back" id="back">← เลือกใหม่</button>
+    <section class="page screen">
+      ${topBar()}
+      <div class="middle">
+        ${choice.reactionImage ? `<img class="story-img" src="${choice.reactionImage}" alt="">` : `<div class="story-mark">✦</div>`}
+        <p class="story-text">${fill(choice.reaction)}</p>
+        <button class="btn-main" id="next">${choice.reactionButton || "ไปต่อ"}</button>
+      </div>
+      <div class="bottom"></div>
     </section>`;
 
   document.getElementById("next").onclick = () => go(1);   // ไปหน้าถัดไปใน STEPS

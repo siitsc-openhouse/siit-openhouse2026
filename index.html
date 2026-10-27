@@ -21,8 +21,18 @@
 </head>
 <body>
 
-  <!-- ปุ่มเปลี่ยนธีมสว่าง/มืด (ไอคอนใส่โดย script.js) อยู่นอก #app จึงไม่หายตอนเปลี่ยนหน้า -->
-  <button class="theme-toggle" id="theme-toggle" type="button"></button>
+  <!-- เมนูด้านบน อยู่นอก #app จึงไม่หายตอนเปลี่ยนหน้า (data-view = หน้าที่จะไป, ไอคอนธีมใส่โดย script.js) -->
+  <header class="navbar">
+    <div class="navbar-inner">
+      <button class="nav-brand" type="button" data-view="home">SIIT</button>
+      <nav class="nav-links">
+        <button type="button" data-view="depts">ข้อมูลภาค</button>
+        <button type="button" data-view="docs">เอกสาร</button>
+        <button type="button" data-view="credits">เครดิต</button>
+      </nav>
+      <button class="theme-toggle" id="theme-toggle" type="button"></button>
+    </div>
+  </header>
   <!-- กล่องหลักของเกม script.js จะเปลี่ยนเนื้อหาข้างในทีละหน้า -->
   <main id="app" class="app"></main>
 
@@ -30,6 +40,7 @@
   <script src="results.js"></script>
   <script src="questions.js"></script>
   <script src="questions-quick.js"></script>
+  <script src="pages.js"></script>
   <script src="script.js"></script>
   <script src="card.js"></script>
 </body>

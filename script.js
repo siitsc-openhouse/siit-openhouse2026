@@ -16,6 +16,7 @@
 /* ==========================================================
    script.js — ตัวควบคุมเกม
    หน้า:  showHome() หน้าแรก เลือกเวอร์ชัน / showDepts() ข้อมูลทุกภาค
+          showDocs() อ่านไฟล์ PDF / showCredits() เครดิตและหมายเหตุ (เนื้อหาอยู่ใน pages.js)
           showStart() / showStory(s) / showQuestion(s) / showResult() ในเกม
    คะแนน: calculate()
    กราฟ:  radarChart() แผนภาพ 8 เหลี่ยม / rankBars() 3 อันดับ / axisBars() แกนนิสัย
@@ -31,12 +32,13 @@ const GAMES = {
   quick: { quiz: QUIZ_QUICK, steps: STEPS_QUICK, label: "Version 2", note: "เนื้อเรื่องคริสตัลดาว 8 คำถาม · 5-7 นาที" }
 };
 
-let view = "home";      // "home" หน้าแรก / "depts" ข้อมูลภาค / "game" กำลังเล่น
+let view = "home";      // "home" หน้าแรก / "depts" ข้อมูลภาค / "docs" เอกสาร / "credits" เครดิต / "game" กำลังเล่น
 let game = GAMES.story; // เวอร์ชันที่กำลังเล่น
 let steps = game.steps;
 let step = -1;          // -1 = หน้าเริ่มของเวอร์ชันนั้น, steps.length = หน้าผล
 let answers = {};       // answers[ลำดับหน้า] = ตัวเลือกที่เลือก (เลขเดิมในไฟล์คำถาม)
 let order = {};         // ลำดับตัวเลือกที่สุ่มแล้วของแต่ละข้อ
+let docIndex = 0;       // เอกสารที่กำลังเปิดอ่านในหน้า "เอกสาร"
 
 // ลำดับหน้าคำถามทั้งหมดของเวอร์ชันที่เล่น ไว้ทำแถบความคืบหน้า "ข้อ 3/10"
 let QUESTION_STEPS = [];
@@ -51,8 +53,13 @@ function selectGame(key) {
   window.scrollTo(0, 0);
 }
 
-function goHome() {
-  view = "home";
+function goHome() { goTo("home"); }
+
+// ไปหน้าจากเมนูด้านบน ถ้ากำลังเล่นอยู่กลางเกมให้ถามก่อน เพราะคำตอบจะหาย
+function goTo(v) {
+  const playing = view === "game" && step >= 0 && step < steps.length && Object.keys(answers).length > 0;
+  if (playing && v !== "game" && !confirm("ออกจากเกม? คำตอบที่เลือกไว้จะหายไป")) return;
+  view = v;
   render();
   window.scrollTo(0, 0);
 }
@@ -66,8 +73,15 @@ function go(delta) {
 }
 
 function render() {
+  // ไฮไลต์เมนูของหน้าที่เปิดอยู่
+  document.querySelectorAll(".nav-links [data-view]").forEach(b => {
+    if (b.dataset.view === view) b.setAttribute("aria-current", "page");
+    else b.removeAttribute("aria-current");
+  });
   if (view === "home") return showHome();
   if (view === "depts") return showDepts();
+  if (view === "docs") return showDocs();
+  if (view === "credits") return showCredits();
   if (step < 0) return showStart();
   if (step >= steps.length) return showResult();
   const s = steps[step];
@@ -93,10 +107,8 @@ function showHome() {
         <p class="subtitle">ลองทำแบบทดสอบ แล้วดูว่าคุณเหมาะกับภาคไหนใน SIIT</p>
         <div class="versions">${versions}</div>
       </div>
-      <div class="bottom"><button class="btn-ghost" id="depts">ดูข้อมูลทุกภาค</button></div>
     </section>`;
   app.querySelectorAll(".version").forEach(btn => { btn.onclick = () => selectGame(btn.dataset.game); });
-  document.getElementById("depts").onclick = () => { view = "depts"; render(); window.scrollTo(0, 0); };
 }
 
 
@@ -114,7 +126,7 @@ function showDepts() {
             <p class="dept-job">${d.job}</p>
           </div>
         </div>
-        <p class="dept-desc">${d.desc}</p>
+        <p class="dept-desc">${d.about}</p>
         <h3>จะได้เรียน</h3>
         <ul class="list">${d.learn.map(t => `<li>${t}</li>`).join("")}</ul>
         ${d.majors && d.majors.length ? `
@@ -125,15 +137,61 @@ function showDepts() {
 
   app.innerHTML = `
     <section class="page depts">
-      <div class="top">
-        <button class="btn-back" id="back" aria-label="กลับหน้าแรก">←</button>
-        <h1 class="top-title">ข้อมูลทุกภาค</h1>
-      </div>
+      <h1 class="page-title">ข้อมูลทุกภาค</h1>
       ${cards}
       <button class="btn-main" id="play">ทำ quiz หาภาคที่ใช่</button>
     </section>`;
-  document.getElementById("back").onclick = goHome;
   document.getElementById("play").onclick = goHome;
+}
+
+
+/* ---------- หน้าเอกสาร: รายชื่อเอกสาร + รูปของเอกสารที่เลือก เรียงลงมาทีละหน้า ---------- */
+function showDocs() {
+  if (!DOCS.length) {
+    app.innerHTML = `
+      <section class="page docs">
+        <h1 class="page-title">เอกสาร</h1>
+        <p class="empty">ยังไม่มีเอกสาร</p>
+      </section>`;
+    return;
+  }
+  if (docIndex >= DOCS.length) docIndex = 0;
+  const doc = DOCS[docIndex];
+  const list = DOCS.map((d, i) => `
+    <button class="doc-item" data-i="${i}" ${i === docIndex ? 'aria-current="true"' : ""}>
+      <span class="doc-title">${d.title}</span>
+      ${d.note ? `<span class="doc-note">${d.note}</span>` : ""}
+    </button>`).join("");
+
+  app.innerHTML = `
+    <section class="page docs">
+      <h1 class="page-title">เอกสาร</h1>
+      ${DOCS.length > 1 ? `<div class="doc-list">${list}</div>` : ""}
+      <div class="doc-viewer">
+        <div class="doc-bar"><span class="doc-title">${doc.title}</span></div>
+        <div class="doc-pages">${(doc.images || []).map((src, i) => `
+          <a href="${encodeURI(src)}" target="_blank" rel="noopener">
+            <img class="doc-page" src="${encodeURI(src)}" alt="${doc.title} หน้า ${i + 1}" loading="lazy">
+          </a>`).join("")}
+        </div>
+      </div>
+    </section>`;
+  app.querySelectorAll(".doc-item").forEach(btn => {
+    btn.onclick = () => { docIndex = Number(btn.dataset.i); showDocs(); };
+  });
+}
+
+
+/* ---------- หน้าเครดิตและหมายเหตุ ---------- */
+function showCredits() {
+  const body = CREDITS.length
+    ? `<article class="block">${CREDITS.map(t => `<p>${t}</p>`).join("")}</article>`
+    : `<p class="empty">ยังไม่มีข้อมูล</p>`;
+  app.innerHTML = `
+    <section class="page credits">
+      <h1 class="page-title">เครดิต</h1>
+      ${body}
+    </section>`;
 }
 
 /* ----- สุ่มลำดับคำตอบ
@@ -499,6 +557,7 @@ function toggleTheme() {
 }
 
 document.getElementById("theme-toggle").onclick = toggleTheme;
+document.querySelectorAll(".navbar [data-view]").forEach(b => { b.onclick = () => goTo(b.dataset.view); });
 // ถ้ายังไม่เคยเลือกเอง แล้วเครื่องเปลี่ยนโหมด ให้ไอคอนเปลี่ยนตาม
 if (systemDark) systemDark.addEventListener("change", updateThemeButton);
 updateThemeButton();

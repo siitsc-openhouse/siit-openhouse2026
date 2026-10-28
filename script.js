@@ -183,14 +183,21 @@ function showDocs() {
 
 
 /* ---------- หน้าเครดิตและหมายเหตุ ---------- */
+const INSTAGRAM_ICON = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="0.6" fill="currentColor"/></svg>`;
+
 function showCredits() {
   const body = CREDITS.length
     ? `<article class="block">${CREDITS.map(t => `<p>${t}</p>`).join("")}</article>`
     : `<p class="empty">ยังไม่มีข้อมูล</p>`;
+  const ig = typeof INSTAGRAM !== "undefined" && INSTAGRAM ? `
+      <a class="social-link" href="${INSTAGRAM.url}" target="_blank" rel="noopener" aria-label="Instagram ${INSTAGRAM.name}">
+        ${INSTAGRAM_ICON}<span>${INSTAGRAM.name}</span>
+      </a>` : "";
   app.innerHTML = `
     <section class="page credits">
       <h1 class="page-title">เครดิต</h1>
       ${body}
+      ${ig}
     </section>`;
 }
 

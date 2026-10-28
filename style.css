@@ -418,6 +418,15 @@ h1 { font-size: 30px; }
 .credits .block { text-align: left; font-size: 14px; }
 .credits .block p { margin: 0; }
 .credits .block p + p { margin-top: 10px; }
+.social-link {
+  align-self: center;
+  display: inline-flex; align-items: center; gap: 8px;
+  font-size: 14px; font-weight: 500; color: var(--ink-soft); text-decoration: none;
+  padding: 8px 14px; border-radius: 999px;
+  transition: color 0.15s;
+}
+.social-link:hover { color: var(--gradient); }
+.social-link svg { width: 22px; height: 22px; flex: 0 0 auto; }
 
 /* ---------- หน้าเอกสาร: รายชื่อเอกสาร + รูปเรียงลงมา ---------- */
 .doc-list { display: flex; flex-direction: column; gap: 8px; }
@@ -442,3 +451,27 @@ h1 { font-size: 30px; }
 .doc-bar .doc-title { font-size: 14px; font-weight: 600; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .doc-pages { display: flex; flex-direction: column; gap: 8px; padding: 8px; }
 .doc-page { display: block; width: 100%; height: auto; border-radius: 8px; cursor: zoom-in; }
+
+.social-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 16px 8px 8px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: var(--card);
+  color: var(--ink);
+  text-decoration: none;
+  font-size: 14.5px;
+  transition: transform .15s, border-color .15s;
+}
+.social-link:hover { transform: translateY(-2px); border-color: var(--accent); }
+
+.social-link i {
+  width: 34px; height: 34px;
+  display: grid; place-items: center;
+  border-radius: 50%;
+  font-size: 18px;
+  color: white;
+  background: var(--gradient);      /* uses your quiz's theme gradient, so it also follows dark mode */
+}

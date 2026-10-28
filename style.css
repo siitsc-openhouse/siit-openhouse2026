@@ -128,6 +128,13 @@ body {
 .theme-toggle:hover { border-color: var(--accent); color: var(--ink); }
 .theme-toggle:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 .theme-toggle svg { width: 18px; height: 18px; }
+#music-toggle[aria-pressed="true"] { color: var(--accent); border-color: var(--accent); }
+
+/* จอแคบ: บีบเมนูให้พอดีกับปุ่มเพลง + ปุ่มธีม */
+@media (max-width: 400px) {
+  .navbar-inner { gap: 6px; padding: 0 12px; }
+  .nav-links button { padding: 6px 7px; font-size: 13px; }
+}
 
 /* กล่องหลัก: อยู่กลางจอ กว้างไม่เกิน --width */
 .app {
@@ -418,6 +425,7 @@ h1 { font-size: 30px; }
 .credits .block { text-align: left; font-size: 14px; }
 .credits .block p { margin: 0; }
 .credits .block p + p { margin-top: 10px; }
+.credits .block a { color: var(--accent); overflow-wrap: anywhere; }
 .social-link {
   align-self: center;
   display: inline-flex; align-items: center; gap: 8px;

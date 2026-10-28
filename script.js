@@ -185,9 +185,17 @@ function showDocs() {
 /* ---------- หน้าเครดิตและหมายเหตุ ---------- */
 const INSTAGRAM_ICON = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="0.6" fill="currentColor"/></svg>`;
 
+// เปลี่ยนข้อความ https://… ให้เป็นลิงก์กดได้ (ย่อหน้าที่ใส่ <a> เองแล้วจะไม่แตะ)
+function linkify(text) {
+  if (/<a\s/i.test(text)) return text;
+  return text.replace(/https?:\/\/[^\s<]+/g, url => `<a href="${url}" target="_blank" rel="noopener">${url}</a>`);
+}
+
 function showCredits() {
-  const body = CREDITS.length
-    ? `<article class="block">${CREDITS.map(t => `<p>${t}</p>`).join("")}</article>`
+  // แต่ละกลุ่มใน CREDITS = หนึ่งกรอบ (ถ้าใส่เป็นข้อความเดี่ยวๆ จะรวมอยู่กรอบเดียว)
+  const groups = CREDITS.length && !Array.isArray(CREDITS[0]) ? [CREDITS] : CREDITS;
+  const body = groups.length
+    ? groups.map(g => `<article class="block">${g.map(t => `<p>${linkify(t)}</p>`).join("")}</article>`).join("")
     : `<p class="empty">ยังไม่มีข้อมูล</p>`;
   const ig = typeof INSTAGRAM !== "undefined" && INSTAGRAM ? `
       <a class="social-link" href="${INSTAGRAM.url}" target="_blank" rel="noopener" aria-label="Instagram ${INSTAGRAM.name}">
@@ -564,6 +572,33 @@ function toggleTheme() {
 }
 
 document.getElementById("theme-toggle").onclick = toggleTheme;
+
+
+/* ---------- ปุ่มเพลงพื้นหลัง (อยู่ข้างปุ่มธีม) ----------
+   เพลงอยู่ที่ audio/ ตั้งใน <audio id="bgm"> ใน index.html  ไอคอนบอกสถานะ: เล่นอยู่ = ลำโพงมีเสียง / หยุด = ลำโพงขีดฆ่า */
+const MUSIC_ICONS = {
+  on: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13"/></svg>`,
+  off: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4z"/><path d="m16 9 6 6M22 9l-6 6"/></svg>`
+};
+const bgm = document.getElementById("bgm");
+bgm.volume = 0.4;
+
+function updateMusicButton() {
+  const btn = document.getElementById("music-toggle");
+  const playing = !bgm.paused;
+  btn.innerHTML = playing ? MUSIC_ICONS.on : MUSIC_ICONS.off;
+  btn.setAttribute("aria-label", playing ? "หยุดเพลง" : "เปิดเพลง");
+  btn.setAttribute("aria-pressed", playing);
+  btn.title = btn.getAttribute("aria-label");
+}
+
+document.getElementById("music-toggle").onclick = () => {
+  if (bgm.paused) bgm.play().catch(updateMusicButton);
+  else bgm.pause();
+};
+bgm.addEventListener("play", updateMusicButton);
+bgm.addEventListener("pause", updateMusicButton);
+updateMusicButton();
 document.querySelectorAll(".navbar [data-view]").forEach(b => { b.onclick = () => goTo(b.dataset.view); });
 // ถ้ายังไม่เคยเลือกเอง แล้วเครื่องเปลี่ยนโหมด ให้ไอคอนเปลี่ยนตาม
 if (systemDark) systemDark.addEventListener("change", updateThemeButton);

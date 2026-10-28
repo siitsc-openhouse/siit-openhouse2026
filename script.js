@@ -28,7 +28,7 @@ const CODES = Object.keys(RESULTS);          // ลำดับภาคตา�
 // เกมแต่ละเวอร์ชัน: quiz = ชื่อ/ปุ่มเริ่ม, steps = หน้าเหตุการณ์และคำถาม
 // เพิ่มเวอร์ชันใหม่ได้โดยสร้างไฟล์คำถามแบบเดียวกัน แล้วเพิ่มบรรทัดในนี้ + ใส่ <script> ใน index.html
 const GAMES = {
-  story: { quiz: QUIZ, steps: STEPS, label: "Version 1", note: "มีเนื้อเรื่อง 10 คำถาม · ประมาณ 5–7 นาที" },
+  story: { quiz: QUIZ, steps: STEPS, label: "Version 1", note: "ผจญภัยในดันเจี้ยน 10 คำถาม · 5-7 นาที" },
   quick: { quiz: QUIZ_QUICK, steps: STEPS_QUICK, label: "Version 2", note: "เนื้อเรื่องคริสตัลดาว 8 คำถาม · 5-7 นาที" }
 };
 
